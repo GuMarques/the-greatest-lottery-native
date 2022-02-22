@@ -6,7 +6,10 @@
     "paths": {
       "@screens": ["./screens"],
       "@components": ["./components"],
-      "@store/*": ["./store/*"]
+      "@store/*": ["./store/*"],
+      "@utils/*": ["./shared/utils/*"],
+      "@constants/*": ["./shared/constants/*"],
+      "@textComponents": ["./components/TextComponents"]
     }
   }
 }
