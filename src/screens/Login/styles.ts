@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 export const CustomView = styled.View`
   background-color: #f7f7f7;
-  flex: 1;
+  flex-grow: 1;
 `;
 
 export const FormView = styled.View`
@@ -21,4 +21,9 @@ export const FormView = styled.View`
 export const ButtonView = styled.View`
   flex: 1;
   justify-content: space-evenly;
+  margin-bottom: 20px;
+`;
+
+export const ButtonsPadding = styled.View`
+  height: 20px;
 `;

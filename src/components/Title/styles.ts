@@ -1,12 +1,12 @@
 import styled from "styled-components/native";
 import Colors from "@constants/CustomColors";
+import { Dimensions } from "react-native";
 
 export const CustomView = styled.View`
-  /* flex: 1; */
   align-items: center;
   padding: 30px;
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-left: ${Dimensions.get("window").width < 350 ? "10px" : "50px"};
+  padding-right: ${Dimensions.get("window").width < 350 ? "10px" : "50px"};
   margin-top: 20px;
 `;
 

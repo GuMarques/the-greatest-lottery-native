@@ -9,6 +9,8 @@
       "@store/*": ["./store/*"],
       "@utils/*": ["./shared/utils/*"],
       "@constants/*": ["./shared/constants/*"],
+      "@services/*": ["./shared/services/*"],
+      "@interfaces": ["./shared/interfaces"],
       "@textComponents": ["./components/TextComponents"]
     }
   }

@@ -3,6 +3,8 @@ import { Login } from "@screens";
 import AppLoading from "expo-app-loading";
 import { StyleSheet, Text, View } from "react-native";
 import fetchFonts from "@utils/fetch-fonts";
+import store from "@store/index";
+import { Provider } from "react-redux";
 
 export default function App() {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -16,7 +18,11 @@ export default function App() {
       />
     );
   }
-  return <Login />;
+  return (
+    <Provider store={store}>
+      <Login />
+    </Provider>
+  );
 }
 
 const styles = StyleSheet.create({

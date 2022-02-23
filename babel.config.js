@@ -14,6 +14,8 @@ module.exports = function (api) {
             "@store": "./src/store",
             "@utils": "./src/shared/utils",
             "@constants": "./src/shared/constants",
+            "@interfaces": "./src/shared/interfaces",
+            "@services": "./src/shared/services",
             "@textComponents": "./src/components/TextComponents",
           },
         },
