@@ -3,7 +3,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
+  ActivityIndicator,
+  View,
 } from "react-native";
 import { CustomView, FormView, ButtonView, ButtonsPadding } from "./styles";
 import { TextBoldItalic, TextItalic } from "@textComponents";
@@ -17,23 +18,28 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { loginRequest } from "@store/slices/user-slice";
+import { userActions } from "@store/slices/user-slice";
+import Auth from "@services/auth";
+import CustomColors from "@constants/CustomColors";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required(),
 });
 
-const Login: React.FC<{}> = (props) => {
+const Login: React.FC<StackScreenProps<{}>> = (props) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
   } = useForm({ resolver: yupResolver(schema) });
+  const { navigation } = props;
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,12 +57,22 @@ const Login: React.FC<{}> = (props) => {
     }
   }, [errors]);
 
-  const onSubmitHandler = handleSubmit((data) => {
-    dispatch(loginRequest({ email: data.email, password: data.password }));
+  const onSubmitHandler = handleSubmit(async (data) => {
+    setIsLoading(true);
+    const { login } = Auth();
+    try {
+      const res = await login({ email: data.email, password: data.password });
+      dispatch(userActions.login({ user: res.user, token: res.token }));
+      setIsLoading(false);
+      navigation.replace("Home" as never, {} as never);
+    } catch (error: any) {
+      setIsLoading(false);
+      alert("Error", error.data.message);
+    }
   });
 
   return (
-    <ScrollView style={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: "flex-end" }}>
       <CustomView>
         <Title />
         <FormView>
@@ -71,6 +87,8 @@ const Login: React.FC<{}> = (props) => {
                 error={emailError.length > 0}
                 onChangeText={(value) => onChange(value)}
                 onFocus={() => setEmailError("")}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
             )}
           />
@@ -80,6 +98,7 @@ const Login: React.FC<{}> = (props) => {
             render={({ field: { onChange, value, onBlur } }) => (
               <CustomInput
                 placeholder="Password"
+                autoCapitalize="none"
                 value={value}
                 onBlur={onBlur}
                 secureTextEntry={true}
@@ -109,8 +128,19 @@ const Login: React.FC<{}> = (props) => {
             </TextBoldItalic>
           </TouchableOpacity>
           <ButtonView>
-            <CustomConfirmButton title="Log In" OnPress={onSubmitHandler} />
+            <View style={{ height: 57.9 }}>
+              {isLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  color={CustomColors.primary}
+                  style={{ marginTop: 15 }}
+                />
+              ) : (
+                <CustomConfirmButton title="Log In" OnPress={onSubmitHandler} />
+              )}
+            </View>
             <ButtonsPadding />
+
             <CustomBackButton
               title="Sign Up"
               OnPress={() => {}}

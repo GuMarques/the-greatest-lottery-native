@@ -6,6 +6,7 @@
     "paths": {
       "@screens": ["./screens"],
       "@components": ["./components"],
+      "@navigation": ["./navigation"],
       "@store/*": ["./store/*"],
       "@utils/*": ["./shared/utils/*"],
       "@constants/*": ["./shared/constants/*"],

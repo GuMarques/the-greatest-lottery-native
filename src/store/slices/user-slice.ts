@@ -42,8 +42,8 @@ export const loginRequest = (body: ILoginRequest) => {
     try {
       const res = await login(body);
       dispatch(userActions.login({ user: res.user, token: res.token }));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   };
 };
