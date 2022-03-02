@@ -4,6 +4,7 @@ import CustomConfirmButton from "./CustomConfirmButton";
 import CustomBackButton from "./CustomBackButton";
 import GameButton from "./GameButton";
 import RecentGame from "./RecentGame";
+import HeaderButton from "./HeaderButton";
 
 export {
   Title,
@@ -12,4 +13,5 @@ export {
   CustomBackButton,
   GameButton,
   RecentGame,
+  HeaderButton,
 };

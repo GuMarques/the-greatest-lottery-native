@@ -18,6 +18,7 @@ module.exports = function (api) {
             "@constants": "./src/shared/constants",
             "@interfaces": "./src/shared/interfaces",
             "@services": "./src/shared/services",
+            "@hooks": "./src/shared/hooks",
             "@textComponents": "./src/components/TextComponents",
           },
         },

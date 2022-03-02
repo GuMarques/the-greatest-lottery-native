@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
@@ -57,16 +56,20 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
     }
   }, [errors]);
 
+  const onSignUpClick = () => {
+    navigation.push("SignUp" as never, {} as never);
+  };
+
   const onSubmitHandler = handleSubmit(async (data) => {
     setIsLoading(true);
     const { login } = Auth();
     try {
       const res = await login({ email: data.email, password: data.password });
       dispatch(userActions.login({ user: res.user, token: res.token }));
-      setIsLoading(false);
-      navigation.replace("Home" as never, {} as never);
+      //navigation.replace("Drawer" as never, {} as never);
     } catch (error: any) {
       setIsLoading(false);
+      console.log(error);
       alert("Error", error.data.message);
     }
   });
@@ -116,17 +119,18 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
             >
               I forgot my password
             </TextItalic>
-            <TextBoldItalic
-              size={18}
-              style={{ textAlign: "center", paddingTop: 15, color: "red" }}
-            >
-              {emailError.length > 0
-                ? emailError
-                : passwordError.length > 0
-                ? passwordError
-                : null}
-            </TextBoldItalic>
           </TouchableOpacity>
+          <TextBoldItalic
+            size={18}
+            style={{ textAlign: "center", paddingTop: 15, color: "red" }}
+          >
+            {emailError.length > 0
+              ? emailError
+              : passwordError.length > 0
+              ? passwordError
+              : null}
+          </TextBoldItalic>
+
           <ButtonView>
             <View style={{ height: 57.9 }}>
               {isLoading ? (
@@ -143,7 +147,7 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
 
             <CustomBackButton
               title="Sign Up"
-              OnPress={() => {}}
+              OnPress={onSignUpClick}
               icon="arrow-forward"
             />
           </ButtonView>
@@ -152,16 +156,5 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontFamily: "helvetica-italic",
-  },
-});
 
 export default Login;

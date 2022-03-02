@@ -1,11 +1,28 @@
-import { ScrollView } from "react-native";
+import { ScrollView, SafeAreaView, Button } from "react-native";
 import { GameButton, RecentGame } from "@components";
 import IGame from "shared/interfaces/IGame";
 import { TextItalic } from "@textComponents";
 import { ScreenView, FiltersView } from "./styles";
 import { IBet } from "shared/interfaces/IBet";
+import { useAppSelector } from "@hooks/custom-useSelector";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { autoLogoutTimer, userActions } from "@store/slices/user-slice";
 
 const Home: React.FC<{}> = (props) => {
+  const token = useAppSelector((state) => state.user.token);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (token.expires_at) {
+      const timeout =
+        new Date(token.expires_at).getTime() - new Date().getTime();
+      if (timeout < 3600000) {
+        dispatch(autoLogoutTimer(timeout));
+      }
+    } else {
+      dispatch(userActions.logout());
+    }
+  }, []);
   const dummyGame: IGame = {
     id: 1,
     type: "Lotofácil",
@@ -28,34 +45,37 @@ const Home: React.FC<{}> = (props) => {
       type: "Quina",
     },
   };
+
   return (
-    <ScreenView>
-      <TextItalic style={{ marginBottom: 10 }}>Filters</TextItalic>
-      <FiltersView>
-        <ScrollView contentContainerStyle={{ marginBottom: 10 }} horizontal>
-          <GameButton game={dummyGame} active={false} />
-          <GameButton game={dummyGame} active={false} />
-          <GameButton game={dummyGame} active={false} />
-          <GameButton game={dummyGame} active={false} />
+    <SafeAreaView>
+      <ScreenView>
+        <TextItalic style={{ marginBottom: 10 }}>Filters</TextItalic>
+        <FiltersView>
+          <ScrollView contentContainerStyle={{ marginBottom: 10 }} horizontal>
+            <GameButton game={dummyGame} active={false} />
+            <GameButton game={dummyGame} active={false} />
+            <GameButton game={dummyGame} active={false} />
+            <GameButton game={dummyGame} active={false} />
+          </ScrollView>
+        </FiltersView>
+        <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
+          <RecentGame bet={dummyBet} />
         </ScrollView>
-      </FiltersView>
-      <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-        <RecentGame bet={dummyBet} />
-      </ScrollView>
-    </ScreenView>
+      </ScreenView>
+    </SafeAreaView>
   );
 };
 

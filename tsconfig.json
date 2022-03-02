@@ -11,6 +11,7 @@
       "@utils/*": ["./shared/utils/*"],
       "@constants/*": ["./shared/constants/*"],
       "@services/*": ["./shared/services/*"],
+      "@hooks/*": ["./shared/hooks/*"],
       "@interfaces": ["./shared/interfaces"],
       "@textComponents": ["./components/TextComponents"]
     }

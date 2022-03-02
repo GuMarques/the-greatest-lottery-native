@@ -1,9 +1,14 @@
 import React from "react";
-import { createSlice } from "@reduxjs/toolkit";
-import { ILoginRequest, ILoginResponse } from "@interfaces";
 import Auth from "@services/auth";
+import { createSlice } from "@reduxjs/toolkit";
+import { ILoginRequest, ILoginResponse, IToken } from "@interfaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const initialLoginState: ILoginResponse = {
+interface loginState extends ILoginResponse {
+  didTryAutoLogin: boolean;
+}
+
+const initialLoginState: loginState = {
   user: {
     id: undefined,
     email: "",
@@ -20,16 +25,37 @@ const initialLoginState: ILoginResponse = {
     token: "",
     expires_at: undefined,
   },
+  didTryAutoLogin: false,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState: initialLoginState,
   reducers: {
-    login({ user, token }, action) {
-      console.log(action.payload);
-      user = action.payload.user;
-      token = action.payload.token;
+    login(state, { payload }) {
+      const actionUser = payload.user;
+      const actionToken = payload.token;
+      AsyncStorage.setItem(
+        "userData",
+        JSON.stringify({
+          user: actionUser,
+          token: actionToken,
+        })
+      );
+      state.user = actionUser;
+      state.token = actionToken;
+    },
+    authenticate(state, { payload }) {
+      state.user = payload.user;
+      state.token = payload.token;
+    },
+    logout() {
+      clearLogoutTimer();
+      AsyncStorage.removeItem("userData");
+      return initialLoginState;
+    },
+    triedAutoLogin(state) {
+      state.didTryAutoLogin = true;
     },
   },
 });
@@ -46,4 +72,22 @@ export const loginRequest = (body: ILoginRequest) => {
       throw new Error(error.message);
     }
   };
+};
+
+let timer: NodeJS.Timeout;
+
+export const autoLogoutTimer = (expirationTime: number) => {
+  console.log("Hello");
+  return (dispatch: React.Dispatch<any>) => {
+    timer = setTimeout(() => {
+      dispatch(userActions.logout());
+      console.log("Timeout!");
+    }, expirationTime);
+  };
+};
+
+export const clearLogoutTimer = () => {
+  if (timer) {
+    clearTimeout(timer);
+  }
 };
