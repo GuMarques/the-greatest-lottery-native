@@ -13,5 +13,5 @@ export const CustomInput = styled.TextInput<IError>`
   padding-top: 34px;
   padding-bottom: 26.5px;
   border-bottom-color: ${({ error }) => (error ? "red" : "#ebebeb")};
-  border-bottom-width: ${({ error }) => (error ? "2px" : "1px")}  ;
+  border-bottom-width: ${({ error }) => (error ? "2px" : "1px")};
 `;

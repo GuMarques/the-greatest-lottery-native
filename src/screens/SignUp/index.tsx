@@ -3,8 +3,9 @@ import {
   CustomConfirmButton,
   CustomInput,
   Title,
+  CustomModal,
 } from "@components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
@@ -16,7 +17,10 @@ import { ButtonsPadding, ButtonView, FormView } from "./styles";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import CustomColors from "@constants/CustomColors";
-import { TextBoldItalic } from "@textComponents";
+import { StackScreenProps } from "@react-navigation/stack";
+import { User } from "@services/index";
+import { userActions } from "@store/slices/user-slice";
+import { useDispatch } from "react-redux";
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -24,30 +28,76 @@ const schema = yup.object().shape({
   password: yup.string().required(),
 });
 
-const SignUp: React.FC<{}> = (props) => {
+const SignUp: React.FC<StackScreenProps<{}>> = (props) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
   } = useForm({ resolver: yupResolver(schema) });
-  const [nameError, setNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalText, setModalText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { navigation } = props;
+  const dispatch = useDispatch();
 
-  const printError = (): string => {
-    if (nameError.length > 0) {
-      return nameError;
+  useEffect(() => {
+    if (errors.name?.message) {
+      setNameError(true);
+      setModalText(
+        errors.name?.message.charAt(0).toUpperCase() +
+          errors.name?.message.slice(1)
+      );
+      setModalVisible();
+      return;
     }
-    if (emailError.length > 0) {
-      return emailError;
+    if (errors.email?.message) {
+      setEmailError(true);
+      setModalText(
+        errors.email?.message.charAt(0).toUpperCase() +
+          errors.email?.message.slice(1)
+      );
+      setModalVisible();
+      return;
     }
-    if (passwordError.length > 0) {
-      return passwordError;
+    if (errors.password?.message) {
+      setPasswordError(true);
+      setModalText(
+        errors.password?.message.charAt(0).toUpperCase() +
+          errors.password?.message.slice(1)
+      );
+      setModalVisible();
+      return;
     }
-    return "";
+  }, [errors]);
+
+  const backButtonHandler = () => {
+    navigation.goBack();
   };
+
+  const setModalVisible = () => {
+    setShowModal((prevState) => !prevState);
+  };
+
+  const onSubmitHandler = handleSubmit(async (data) => {
+    setIsLoading(true);
+    const { createUser } = User();
+    try {
+      const res = await createUser({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      });
+      dispatch(userActions.login({ user: res.user, token: res.token }));
+    } catch (error: any) {
+      if (error.errors[0].message) setModalText(error.errors[0].message);
+      setModalText("Something went wrong, try again");
+      setModalVisible();
+    }
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-end" }}>
@@ -62,9 +112,9 @@ const SignUp: React.FC<{}> = (props) => {
                 placeholder="Name"
                 value={value}
                 onBlur={onBlur}
-                error={nameError.length > 0}
+                error={nameError}
                 onChangeText={(value) => onChange(value)}
-                onFocus={() => setNameError("")}
+                onFocus={() => setNameError(false)}
                 keyboardType="default"
                 autoCapitalize="words"
               />
@@ -78,9 +128,9 @@ const SignUp: React.FC<{}> = (props) => {
                 placeholder="Email"
                 value={value}
                 onBlur={onBlur}
-                error={emailError.length > 0}
+                error={emailError}
                 onChangeText={(value) => onChange(value)}
-                onFocus={() => setEmailError("")}
+                onFocus={() => setEmailError(false)}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -94,22 +144,15 @@ const SignUp: React.FC<{}> = (props) => {
                 placeholder="Password"
                 value={value}
                 onBlur={onBlur}
-                error={passwordError.length > 0}
+                error={passwordError}
                 onChangeText={(value) => onChange(value)}
-                onFocus={() => setPasswordError("")}
+                onFocus={() => setPasswordError(false)}
                 keyboardType="default"
                 autoCapitalize="none"
                 secureTextEntry={true}
               />
             )}
           />
-
-          <TextBoldItalic
-            size={18}
-            style={{ textAlign: "center", paddingTop: 5, color: "red" }}
-          >
-            {printError()}
-          </TextBoldItalic>
           <ButtonView>
             <View style={{ height: 57.9 }}>
               {isLoading ? (
@@ -119,18 +162,26 @@ const SignUp: React.FC<{}> = (props) => {
                   style={{ marginTop: 15 }}
                 />
               ) : (
-                <CustomConfirmButton title="Register" OnPress={() => {}} />
+                <CustomConfirmButton
+                  title="Register"
+                  OnPress={onSubmitHandler}
+                />
               )}
             </View>
             <ButtonsPadding />
             <CustomBackButton
-              title="Back        "
-              OnPress={() => {}}
+              title="Back      "
+              OnPress={backButtonHandler}
               icon="arrow-back"
               iconSide="left"
             />
           </ButtonView>
         </FormView>
+        <CustomModal
+          isVisible={showModal}
+          text={modalText}
+          setModalVisible={setModalVisible}
+        />
       </ScrollView>
     </SafeAreaView>
   );

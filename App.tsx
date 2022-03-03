@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from "react-native";
 import fetchFonts from "@utils/fetch-fonts";
 import store from "@store/index";
 import { Provider } from "react-redux";
-import SuperAlert from "react-native-super-alert";
 import Navigator from "@navigation";
 import "react-native-gesture-handler";
 
@@ -23,7 +22,6 @@ export default function App() {
   return (
     <Provider store={store}>
       <Navigator />
-      <SuperAlert />
     </Provider>
   );
 }

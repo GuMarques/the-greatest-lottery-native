@@ -5,6 +5,7 @@ import CustomBackButton from "./CustomBackButton";
 import GameButton from "./GameButton";
 import RecentGame from "./RecentGame";
 import HeaderButton from "./HeaderButton";
+import CustomModal from "./CustomModal";
 
 export {
   Title,
@@ -14,4 +15,5 @@ export {
   GameButton,
   RecentGame,
   HeaderButton,
+  CustomModal,
 };

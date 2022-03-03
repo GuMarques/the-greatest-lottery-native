@@ -6,12 +6,13 @@ import {
   View,
 } from "react-native";
 import { CustomView, FormView, ButtonView, ButtonsPadding } from "./styles";
-import { TextBoldItalic, TextItalic } from "@textComponents";
+import { Text, TextBoldItalic, TextItalic } from "@textComponents";
 import {
   Title,
   CustomInput,
   CustomConfirmButton,
   CustomBackButton,
+  CustomModal,
 } from "@components";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -36,23 +37,31 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
   } = useForm({ resolver: yupResolver(schema) });
   const { navigation } = props;
 
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalText, setModalText] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (errors.email?.message) {
-      setEmailError(
+      setEmailError(true);
+      setModalText(
         errors.email?.message.charAt(0).toUpperCase() +
           errors.email?.message.slice(1)
       );
+      setModalVisible();
+      return;
     }
     if (errors.password?.message) {
-      setPasswordError(
+      setPasswordError(true);
+      setModalText(
         errors.password?.message.charAt(0).toUpperCase() +
           errors.password?.message.slice(1)
       );
+      setModalVisible();
+      return;
     }
   }, [errors]);
 
@@ -66,13 +75,21 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
     try {
       const res = await login({ email: data.email, password: data.password });
       dispatch(userActions.login({ user: res.user, token: res.token }));
-      //navigation.replace("Drawer" as never, {} as never);
     } catch (error: any) {
       setIsLoading(false);
       console.log(error);
-      alert("Error", error.data.message);
+      setModalText("error.data.message");
+      setModalVisible();
     }
   });
+
+  const setModalVisible = () => {
+    setShowModal((prevState) => !prevState);
+  };
+
+  const forgotPasswordHandler = () => {
+    navigation.push("SendEmailResetPassword" as never, {} as never);
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flex: 1, justifyContent: "flex-end" }}>
@@ -87,9 +104,9 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
                 placeholder="Email"
                 value={value}
                 onBlur={onBlur}
-                error={emailError.length > 0}
+                error={emailError}
                 onChangeText={(value) => onChange(value)}
-                onFocus={() => setEmailError("")}
+                onFocus={() => setEmailError(false)}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -105,13 +122,13 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
                 value={value}
                 onBlur={onBlur}
                 secureTextEntry={true}
-                error={passwordError.length > 0}
+                error={passwordError}
                 onChangeText={(value) => onChange(value)}
-                onFocus={() => setPasswordError("")}
+                onFocus={() => setPasswordError(false)}
               />
             )}
           />
-          <TouchableOpacity activeOpacity={0.7}>
+          <TouchableOpacity activeOpacity={0.7} onPress={forgotPasswordHandler}>
             <TextItalic
               size={17}
               color={"#C1C1C1"}
@@ -120,17 +137,6 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
               I forgot my password
             </TextItalic>
           </TouchableOpacity>
-          <TextBoldItalic
-            size={18}
-            style={{ textAlign: "center", paddingTop: 15, color: "red" }}
-          >
-            {emailError.length > 0
-              ? emailError
-              : passwordError.length > 0
-              ? passwordError
-              : null}
-          </TextBoldItalic>
-
           <ButtonView>
             <View style={{ height: 57.9 }}>
               {isLoading ? (
@@ -153,6 +159,11 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
           </ButtonView>
         </FormView>
       </CustomView>
+      <CustomModal
+        isVisible={showModal}
+        text={modalText}
+        setModalVisible={setModalVisible}
+      />
     </ScrollView>
   );
 };
