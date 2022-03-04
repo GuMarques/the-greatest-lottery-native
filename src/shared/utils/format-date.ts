@@ -1,7 +1,8 @@
 const formatDate = (data: Date): string => {
-  const dd = data.getDate();
-  const mm = data.getMonth() + 1;
-  const yyyy = data.getFullYear();
+  const tranformedData = new Date(data);
+  const dd = tranformedData.getDate();
+  const mm = tranformedData.getMonth() + 1;
+  const yyyy = tranformedData.getFullYear();
   let formatedDate: string;
   if (dd < 10) {
     formatedDate = "0" + dd;

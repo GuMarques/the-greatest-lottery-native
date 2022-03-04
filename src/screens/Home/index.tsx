@@ -1,15 +1,22 @@
-import { ScrollView, SafeAreaView, Button } from "react-native";
+import { ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
 import { GameButton, RecentGame } from "@components";
-import IGame from "shared/interfaces/IGame";
-import { TextItalic } from "@textComponents";
+import { TextBoldItalic, TextItalic } from "@textComponents";
 import { ScreenView, FiltersView } from "./styles";
-import { IBet } from "shared/interfaces/IBet";
+import { IBet, IGame } from "@interfaces";
 import { useAppSelector } from "@hooks/custom-useSelector";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { autoLogoutTimer, userActions } from "@store/slices/user-slice";
+import { Games, Bets } from "@services/index";
+import { useState } from "react";
+import { gamesActions } from "@store/slices/games-slice";
+import CustomColors from "@constants/CustomColors";
 
 const Home: React.FC<{}> = (props) => {
+  const [games, setGames] = useState<IGame[] | null>(null);
+  const [filters, setFilters] = useState<string[]>([]);
+  const [bets, setBets] = useState<IBet[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const token = useAppSelector((state) => state.user.token);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -23,56 +30,99 @@ const Home: React.FC<{}> = (props) => {
       dispatch(userActions.logout());
     }
   }, []);
-  const dummyGame: IGame = {
-    id: 1,
-    type: "Lotofácil",
-    description:
-      "Escolha 15 números para apostar na lotofácil. Você ganha acertando 11, 12, 13, 14 ou 15 números. São muitas chances de ganhar, e agora você joga de onde estiver!",
-    range: 25,
-    price: 2.5,
-    max_number: 15,
-    color: "#7F3992",
+
+  useEffect(() => {
+    getGames();
+    getBets();
+  }, [filters]);
+
+  const getGames = async () => {
+    setIsLoading(true);
+    const { listGames } = Games();
+    try {
+      const res = await listGames();
+      dispatch(
+        gamesActions.setGames({
+          min_cart_value: res.min_cart_value,
+          types: res.types,
+        })
+      );
+      setGames(res.types);
+    } catch (error: any) {
+      console.log(error);
+    }
   };
-  const dummyBet: IBet = {
-    id: 34,
-    user_id: 20,
-    game_id: 3,
-    choosen_numbers: "1,2,3,4,5",
-    price: 2,
-    created_at: new Date("2022-02-08T11:44:49.000-03:00"),
-    type: {
-      id: 3,
-      type: "Quina",
-    },
+
+  const getBets = async () => {
+    const { listBet } = Bets();
+    try {
+      const res = await listBet(filters);
+      setBets(
+        res.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      );
+      setIsLoading(false);
+    } catch (error: any) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  const handlerFilterClick = async (game: IGame) => {
+    setFilters((prevState) => {
+      let tempArray;
+      if (prevState.includes(game.type)) {
+        tempArray = prevState.filter((value) => {
+          return value !== game.type;
+        });
+      } else {
+        tempArray = prevState.concat(game.type);
+      }
+      return tempArray;
+    });
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScreenView>
         <TextItalic style={{ marginBottom: 10 }}>Filters</TextItalic>
         <FiltersView>
           <ScrollView contentContainerStyle={{ marginBottom: 10 }} horizontal>
-            <GameButton game={dummyGame} active={false} />
-            <GameButton game={dummyGame} active={false} />
-            <GameButton game={dummyGame} active={false} />
-            <GameButton game={dummyGame} active={false} />
+            {games?.map((game) => {
+              return (
+                <GameButton
+                  key={game.id}
+                  game={game}
+                  active={filters.indexOf(game.type) !== -1}
+                  onPress={() => handlerFilterClick(game)}
+                />
+              );
+            })}
           </ScrollView>
         </FiltersView>
-        <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
-          <RecentGame bet={dummyBet} />
+        <ScrollView>
+          {isLoading && (
+            <ActivityIndicator
+              style={{ flex: 1, marginTop: 50 }}
+              size="large"
+              color={CustomColors.primary}
+            />
+          )}
+          {!isLoading && bets?.length === 0 && (
+            <TextBoldItalic
+              size={22}
+              style={{ textAlign: "center", marginTop: 50 }}
+            >
+              You don't have any games in this cofiguration, make a bet!
+            </TextBoldItalic>
+          )}
+          {!isLoading &&
+            bets?.length! >= 0 &&
+            bets?.map((bet) => {
+              return <RecentGame key={bet.id} bet={bet} />;
+            })}
         </ScrollView>
       </ScreenView>
     </SafeAreaView>

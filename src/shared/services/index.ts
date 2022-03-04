@@ -1,3 +1,5 @@
 import Auth from "./auth";
 import User from "./user";
-export { Auth, User };
+import Bets from "./bets";
+import Games from "./games";
+export { Auth, User, Bets, Games };

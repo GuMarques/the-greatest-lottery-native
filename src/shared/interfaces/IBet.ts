@@ -1,4 +1,4 @@
-export interface IBet {
+export default interface IBet {
   id: number;
   user_id: number;
   game_id: number;

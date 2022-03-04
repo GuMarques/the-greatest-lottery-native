@@ -6,7 +6,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import { Home } from "@screens";
+import { Home, NewBet } from "@screens";
 import { SafeAreaView } from "react-navigation";
 import CustomColors from "@constants/CustomColors";
 import { useDispatch } from "react-redux";
@@ -47,6 +47,34 @@ const DrawerNavigator = () => {
                 name={Platform.select({
                   ios: "ios-home",
                   android: "md-home",
+                })}
+                size={23}
+                color={drawerConfig.color}
+              />
+            ),
+            headerLeft: () => (
+              <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                <Item
+                  iconName="md-menu"
+                  title="Menu"
+                  onPress={() => navData.navigation.toggleDrawer()}
+                />
+              </HeaderButtons>
+            ),
+          };
+        }}
+      />
+      <AppDrawer.Screen
+        name="New Game"
+        component={NewBet}
+        options={(navData) => {
+          return {
+            headerTitle: "New Game",
+            drawerIcon: (drawerConfig) => (
+              <Ionicons
+                name={Platform.select({
+                  ios: "ios-trophy",
+                  android: "md-trophy",
                 })}
                 size={23}
                 color={drawerConfig.color}

@@ -1,4 +1,6 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ILoginResponse, IToken } from "@interfaces";
 
 const instance = axios.create({
   baseURL: "http://10.0.2.2:3333",
@@ -10,10 +12,12 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   async (config) => {
-    // const isToken = localStorage.getItem("token");
-    const isToken = false;
-    if (isToken) {
-      config.headers!.Authorization = "Bearer " + isToken;
+    const storage = await AsyncStorage.getItem("userData");
+    if (storage) {
+      const { token }: ILoginResponse = JSON.parse(storage);
+      if (token) {
+        config.headers!.Authorization = "Bearer " + token.token;
+      }
     }
     return config;
   },

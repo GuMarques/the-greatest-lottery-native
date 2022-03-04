@@ -19,7 +19,7 @@ import * as yup from "yup";
 import CustomColors from "@constants/CustomColors";
 import { StackScreenProps } from "@react-navigation/stack";
 import { User } from "@services/index";
-import { userActions } from "@store/slices/user-slice";
+import { loginRequest, userActions } from "@store/slices/user-slice";
 import { useDispatch } from "react-redux";
 
 const schema = yup.object().shape({
@@ -91,7 +91,7 @@ const SignUp: React.FC<StackScreenProps<{}>> = (props) => {
         password: data.password,
         name: data.name,
       });
-      dispatch(userActions.login({ user: res.user, token: res.token }));
+      dispatch(loginRequest({ user: res.user, token: res.token }));
     } catch (error: any) {
       if (error.errors[0].message) setModalText(error.errors[0].message);
       setModalText("Something went wrong, try again");

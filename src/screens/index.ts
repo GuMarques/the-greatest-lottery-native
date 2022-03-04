@@ -4,4 +4,13 @@ import Startup from "./Startup";
 import SignUp from "./SignUp";
 import SendEmailResetPassword from "./SendEmailResetPassword";
 import ResetPassword from "./ResetPassword";
-export { Login, Home, Startup, SignUp, SendEmailResetPassword, ResetPassword };
+import NewBet from "./NewBet";
+export {
+  Login,
+  Home,
+  Startup,
+  SignUp,
+  SendEmailResetPassword,
+  ResetPassword,
+  NewBet,
+};

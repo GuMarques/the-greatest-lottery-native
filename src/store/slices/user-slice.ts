@@ -1,7 +1,6 @@
 import React from "react";
-import Auth from "@services/auth";
 import { createSlice } from "@reduxjs/toolkit";
-import { ILoginRequest, ILoginResponse, IToken } from "@interfaces";
+import { ILoginResponse } from "@interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface loginState extends ILoginResponse {
@@ -33,17 +32,8 @@ export const userSlice = createSlice({
   initialState: initialLoginState,
   reducers: {
     login(state, { payload }) {
-      const actionUser = payload.user;
-      const actionToken = payload.token;
-      AsyncStorage.setItem(
-        "userData",
-        JSON.stringify({
-          user: actionUser,
-          token: actionToken,
-        })
-      );
-      state.user = actionUser;
-      state.token = actionToken;
+      state.user = payload.user;
+      state.token = payload.token;
     },
     authenticate(state, { payload }) {
       state.user = payload.user;
@@ -62,26 +52,25 @@ export const userSlice = createSlice({
 
 export const userActions = userSlice.actions;
 
-export const loginRequest = (body: ILoginRequest) => {
+export const loginRequest = ({ user, token }: ILoginResponse) => {
   return async (dispatch: React.Dispatch<any>) => {
-    const { login } = Auth();
-    try {
-      const res = await login(body);
-      dispatch(userActions.login({ user: res.user, token: res.token }));
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
+    await AsyncStorage.setItem(
+      "userData",
+      JSON.stringify({
+        user: user,
+        token: token,
+      })
+    );
+    dispatch(userActions.login({ user: user, token: token }));
   };
 };
 
 let timer: NodeJS.Timeout;
 
 export const autoLogoutTimer = (expirationTime: number) => {
-  console.log("Hello");
   return (dispatch: React.Dispatch<any>) => {
     timer = setTimeout(() => {
       dispatch(userActions.logout());
-      console.log("Timeout!");
     }, expirationTime);
   };
 };

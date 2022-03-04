@@ -18,7 +18,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { userActions } from "@store/slices/user-slice";
+import { loginRequest, userActions } from "@store/slices/user-slice";
 import Auth from "@services/auth";
 import CustomColors from "@constants/CustomColors";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -74,7 +74,7 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
     const { login } = Auth();
     try {
       const res = await login({ email: data.email, password: data.password });
-      dispatch(userActions.login({ user: res.user, token: res.token }));
+      dispatch(loginRequest({ user: res.user, token: res.token }));
     } catch (error: any) {
       setIsLoading(false);
       console.log(error);
