@@ -7,6 +7,7 @@ import RecentGame from "./RecentGame";
 import HeaderButton from "./HeaderButton";
 import CustomModal from "./CustomModal";
 import BoardButton from "./BoardButton";
+import Cart from "./Cart";
 
 export {
   Title,
@@ -18,4 +19,5 @@ export {
   HeaderButton,
   CustomModal,
   BoardButton,
+  Cart,
 };

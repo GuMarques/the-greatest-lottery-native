@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-navigation";
 import CustomColors from "@constants/CustomColors";
 import { useDispatch } from "react-redux";
 import { userActions } from "@store/slices/user-slice";
+import { cartActions } from "@store/slices/cart-slice";
 
 const AppDrawer = createDrawerNavigator();
 
@@ -86,6 +87,18 @@ const DrawerNavigator = () => {
                   iconName="md-menu"
                   title="Menu"
                   onPress={() => navData.navigation.toggleDrawer()}
+                />
+              </HeaderButtons>
+            ),
+            headerRight: () => (
+              <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                <Item
+                  iconName={Platform.select({
+                    ios: "ios-cart",
+                    android: "md-cart",
+                  })}
+                  title="Cart"
+                  onPress={() => dispatch(cartActions.toggleCart())}
                 />
               </HeaderButtons>
             ),

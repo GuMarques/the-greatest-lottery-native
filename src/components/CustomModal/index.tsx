@@ -12,10 +12,17 @@ const CustomModal: React.FC<{
     color: string;
     buttonHandler: () => void;
   };
+  firstButtonText?: string;
   setModalVisible: () => void;
 }> = (props) => {
-  const { isVisible, text, setModalVisible, secondButton, onModalHideHandler } =
-    props;
+  const {
+    isVisible,
+    text,
+    setModalVisible,
+    secondButton,
+    onModalHideHandler,
+    firstButtonText,
+  } = props;
   const width = Dimensions.get("window").width * 0.8;
   const height = Dimensions.get("window").height * 0.3;
 
@@ -36,14 +43,17 @@ const CustomModal: React.FC<{
           </Text>
           <ButtonView doubleButton={!!secondButton}>
             <ModalButton activeOpacity={0.4} onPress={setModalVisible}>
-              <Text style={{ textAlign: "center" }}>OK</Text>
+              <Text style={{ textAlign: "center" }}>
+                {firstButtonText ? firstButtonText : "OK"}
+              </Text>
             </ModalButton>
             {secondButton && (
               <ModalButton
+                customColor={secondButton.color}
                 activeOpacity={0.4}
                 onPress={secondButton.buttonHandler}
               >
-                <Text>{secondButton.title}</Text>
+                <Text style={{ textAlign: "center" }}>{secondButton.title}</Text>
               </ModalButton>
             )}
           </ButtonView>
