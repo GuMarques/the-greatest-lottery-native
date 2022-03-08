@@ -65,11 +65,8 @@ const SendEmailResetPassword: React.FC<StackScreenProps<{}>> = (props) => {
       navigation.push("ResetPassword" as never, { token: res.token } as never);
     } catch (error: any) {
       setIsLoading(false);
-      if (error.message) {
-        setModalText(error.message);
-      } else {
-        setModalText("Something went wrong, try again");
-      }
+      setModalText("This email is not registered");
+      setModalVisible();
     }
   });
 

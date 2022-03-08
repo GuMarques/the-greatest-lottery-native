@@ -78,8 +78,7 @@ const Login: React.FC<StackScreenProps<{}>> = (props) => {
       dispatch(loginRequest({ user: res.user, token: res.token }));
     } catch (error: any) {
       setIsLoading(false);
-      console.log(error);
-      setModalText("error.data.message");
+      setModalText("email ou senha invalidos");
       setModalVisible();
     }
   });

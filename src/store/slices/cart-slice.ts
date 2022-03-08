@@ -22,6 +22,9 @@ export const cartSlice = createSlice({
     toggleCart(state) {
       state.opened = !state.opened;
     },
+    closeCart(state) {
+      state.opened = false;
+    },
     addItemToCart(state, { payload }) {
       state.bets.push(payload.bet);
       state.total += payload.bet.price;
@@ -30,8 +33,9 @@ export const cartSlice = createSlice({
       state.bets.splice(payload.index, 1);
       state.total -= payload.price;
     },
-    clearCart(_) {
-      return initialCartState;
+    clearCart(state) {
+      state.total = 0;
+      state.bets = [];
     },
   },
 });

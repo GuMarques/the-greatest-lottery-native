@@ -53,7 +53,6 @@ const Cart: React.FC<StackScreenProps<{}>> = (props) => {
     try {
       await newBet(req);
       setBetPlaced(true);
-      dispatch(cartActions.clearCart());
       setModalText("Bets placed sucessfully! Good Luck!");
       setModalVisible();
     } catch (error: any) {
@@ -76,7 +75,7 @@ const Cart: React.FC<StackScreenProps<{}>> = (props) => {
 
   const navigateAfterCloseModal = () => {
     if (betPlaced) {
-      dispatch(cartActions.toggleCart());
+      dispatch(cartActions.clearCart());
       navigation.navigate("Home" as never, {} as never);
     }
   };

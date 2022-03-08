@@ -17,6 +17,7 @@ import { useState } from "react";
 import { gamesActions } from "@store/slices/games-slice";
 import CustomColors from "@constants/CustomColors";
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { cartActions } from "@store/slices/cart-slice";
 
 const Home: React.FC<DrawerScreenProps<{}>> = (props) => {
   const [games, setGames] = useState<IGame[] | null>(null);
@@ -30,6 +31,7 @@ const Home: React.FC<DrawerScreenProps<{}>> = (props) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(cartActions.closeCart());
       setIsLoading(true);
       getGames();
       getBets();

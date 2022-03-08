@@ -93,9 +93,9 @@ const SignUp: React.FC<StackScreenProps<{}>> = (props) => {
       });
       dispatch(loginRequest({ user: res.user, token: res.token }));
     } catch (error: any) {
-      if (error.errors[0].message) setModalText(error.errors[0].message);
-      setModalText("Something went wrong, try again");
+      setModalText("This email already exists");
       setModalVisible();
+      setIsLoading(true);
     }
   });
 
