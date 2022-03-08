@@ -8,6 +8,8 @@ import HeaderButton from "./HeaderButton";
 import CustomModal from "./CustomModal";
 import BoardButton from "./BoardButton";
 import Cart from "./Cart";
+import LogoutButton from "./LogoutButton";
+import DrawerInfos from "./DrawerInfos";
 
 export {
   Title,
@@ -20,4 +22,6 @@ export {
   CustomModal,
   BoardButton,
   Cart,
+  LogoutButton,
+  DrawerInfos,
 };

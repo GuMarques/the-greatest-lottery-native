@@ -9,6 +9,7 @@ export const BoardView = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   margin-top: 10px;
+  justify-content: space-between;
 `;
 
 export const ActionButtonsView = styled.View`

@@ -9,6 +9,8 @@ import INewBetResponse from "./response/INewBetResponse";
 import IBet from "./IBet";
 import IGame from "./IGame";
 import IListGamesResponse from "./response/IListGamesResponse";
+import IUpdateMyUserRequest from "./request/IUpdateMyUserRequest";
+import IUpdateMyUserResponse from "./response/IUpdateMyUserResponse";
 
 export {
   ILoginRequest,
@@ -22,4 +24,6 @@ export {
   IBet,
   IGame,
   IListGamesResponse,
+  IUpdateMyUserRequest,
+  IUpdateMyUserResponse,
 };

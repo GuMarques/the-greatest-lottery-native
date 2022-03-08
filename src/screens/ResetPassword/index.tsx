@@ -113,7 +113,7 @@ const ResetPassword = ({ route, navigation }: Props) => {
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-end" }}>
-      <ScrollView contentContainerStyle={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <CustomView>
           <Title />
           <FormView>

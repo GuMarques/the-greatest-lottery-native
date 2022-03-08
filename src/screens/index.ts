@@ -5,6 +5,7 @@ import SignUp from "./SignUp";
 import SendEmailResetPassword from "./SendEmailResetPassword";
 import ResetPassword from "./ResetPassword";
 import NewBet from "./NewBet";
+import Account from "./Account";
 export {
   Login,
   Home,
@@ -13,4 +14,5 @@ export {
   SendEmailResetPassword,
   ResetPassword,
   NewBet,
+  Account,
 };

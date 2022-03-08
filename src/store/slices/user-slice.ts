@@ -47,6 +47,9 @@ export const userSlice = createSlice({
     triedAutoLogin(state) {
       state.didTryAutoLogin = true;
     },
+    updateInfos(state, { payload }) {
+      state.user = payload.user;
+    },
   },
 });
 

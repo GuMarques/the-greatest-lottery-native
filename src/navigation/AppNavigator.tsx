@@ -1,5 +1,4 @@
 import React from "react";
-import BaseStack from "./BaseStack";
 import { useAppSelector } from "@hooks/custom-useSelector";
 import { NavigationContainer } from "@react-navigation/native";
 import UnauthenticatedStack from "./UnauthenticatedStack";

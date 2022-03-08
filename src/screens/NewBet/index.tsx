@@ -6,6 +6,8 @@ import {
   View,
   Platform,
   Dimensions,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import {
   ActionButton,
@@ -28,6 +30,8 @@ import { cartActions } from "@store/slices/cart-slice";
 import { StackScreenProps } from "@react-navigation/stack";
 
 const NewBet: React.FC<StackScreenProps<{}>> = (props) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [games, setGames] = useState<IGame[] | null>(null);
   const [activeGame, setActiveGame] = useState<IGame | null>(null);
   const [activeButtons, setActiveButtons] = useState<number[]>([]);
@@ -45,6 +49,12 @@ const NewBet: React.FC<StackScreenProps<{}>> = (props) => {
     getGames();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getGames();
+    setRefreshing(false);
+  };
+
   const getGames = async () => {
     const { listGames } = Games();
     try {
@@ -56,11 +66,13 @@ const NewBet: React.FC<StackScreenProps<{}>> = (props) => {
         })
       );
       setGames(res.types);
-      if (res.types.length > 0) {
+      if (res.types.length > 0 && activeGame === null) {
         handlerGameSelection(res.types[0]);
       }
+      setIsLoading(false);
     } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
@@ -161,77 +173,95 @@ const NewBet: React.FC<StackScreenProps<{}>> = (props) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 20 }}>
-      <ScrollView>
-        <TitleView>
-          <TextBoldItalic size={20} color={CustomColors.secondary}>
-            NEW BET
-          </TextBoldItalic>
-          <TextItalic size={20} color={CustomColors.secondary}>
-            {" "}
-            FOR {activeGame?.type.toUpperCase()}
-          </TextItalic>
-        </TitleView>
-        <View>
-          <TextBoldItalic
-            color={CustomColors.secondary}
-            style={{ marginBottom: 10 }}
-          >
-            Choose a game
-          </TextBoldItalic>
-          <ScrollView contentContainerStyle={{ marginBottom: 10 }} horizontal>
-            {games?.map((game) => {
-              return (
-                <GameButton
-                  key={game.id}
-                  game={game}
-                  active={activeGame?.id === game.id}
-                  onPress={() => handlerGameSelection(game)}
+    <SafeAreaView style={{ flex: 1, paddingVertical: 20, paddingBottom: 5 }}>
+      <ScrollView
+        style={{ paddingHorizontal: 20 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {isLoading && (
+          <ActivityIndicator size="large" color={CustomColors.primary} />
+        )}
+        {!isLoading && (
+          <>
+            <TitleView>
+              <TextBoldItalic size={20} color={CustomColors.secondary}>
+                NEW BET
+              </TextBoldItalic>
+              <TextItalic size={20} color={CustomColors.secondary}>
+                {" "}
+                FOR {activeGame?.type.toUpperCase()}
+              </TextItalic>
+            </TitleView>
+            <View>
+              <TextBoldItalic
+                color={CustomColors.secondary}
+                style={{ marginBottom: 10 }}
+              >
+                Choose a game
+              </TextBoldItalic>
+              <ScrollView
+                contentContainerStyle={{
+                  marginBottom: 10,
+                }}
+                horizontal
+              >
+                {games?.map((game) => {
+                  return (
+                    <GameButton
+                      key={game.id}
+                      game={game}
+                      active={activeGame?.id === game.id}
+                      onPress={() => handlerGameSelection(game)}
+                    />
+                  );
+                })}
+              </ScrollView>
+              <TextBoldItalic
+                color={CustomColors.secondary}
+                style={{ marginTop: 5 }}
+              >
+                Fill your bet
+              </TextBoldItalic>
+              <TextItalic color={CustomColors.secondary}>
+                {activeGame?.description}
+              </TextItalic>
+            </View>
+            <BoardView>{drawBoard()}</BoardView>
+            <ActionButtonsView>
+              <ActionButton activeOpacity={0.6} onPress={handlerCompleteGame}>
+                <Text color="#27c383">Complete Game</Text>
+              </ActionButton>
+              <ActionButton activeOpacity={0.6} onPress={handlerClearGame}>
+                <Text color="#27c383">Clear Game</Text>
+              </ActionButton>
+            </ActionButtonsView>
+            <CartButtonView>
+              <AddToCartButton activeOpacity={0.6} onPress={handlerAddToCart}>
+                <Ionicons
+                  name={Platform.select({
+                    ios: "ios-cart",
+                    android: "md-cart",
+                  })}
+                  color="#FFF"
+                  size={23}
+                  style={{ marginRight: 5 }}
                 />
-              );
-            })}
-          </ScrollView>
-          <TextBoldItalic
-            color={CustomColors.secondary}
-            style={{ marginTop: 5 }}
-          >
-            Fill your bet
-          </TextBoldItalic>
-          <TextItalic color={CustomColors.secondary}>
-            {activeGame?.description}
-          </TextItalic>
-        </View>
-        <BoardView>{drawBoard()}</BoardView>
-        <ActionButtonsView>
-          <ActionButton activeOpacity={0.6} onPress={handlerCompleteGame}>
-            <Text color="#27c383">Complete Game</Text>
-          </ActionButton>
-          <ActionButton activeOpacity={0.6} onPress={handlerClearGame}>
-            <Text color="#27c383">Clear Game</Text>
-          </ActionButton>
-        </ActionButtonsView>
-        <CartButtonView>
-          <AddToCartButton activeOpacity={0.6} onPress={handlerAddToCart}>
-            <Ionicons
-              name={Platform.select({
-                ios: "ios-cart",
-                android: "md-cart",
-              })}
-              color="#FFF"
-              size={23}
-              style={{ marginRight: 5 }}
+                <Text color="#FFF" style={{ marginLeft: 5 }}>
+                  Add to cart
+                </Text>
+              </AddToCartButton>
+            </CartButtonView>
+            <CustomModal
+              isVisible={showModal}
+              text={modalText}
+              setModalVisible={setModalVisible}
             />
-            <Text color="#FFF" style={{ marginLeft: 5 }}>
-              Add to cart
-            </Text>
-          </AddToCartButton>
-        </CartButtonView>
-        <CustomModal
-          isVisible={showModal}
-          text={modalText}
-          setModalVisible={setModalVisible}
-        />
+          </>
+        )}
       </ScrollView>
+
       <Modal
         isVisible={isCartOpened}
         onBackdropPress={() => dispatch(cartActions.toggleCart())}

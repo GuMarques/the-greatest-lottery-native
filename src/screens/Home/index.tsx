@@ -1,4 +1,9 @@
-import { ScrollView, SafeAreaView, ActivityIndicator } from "react-native";
+import {
+  ScrollView,
+  SafeAreaView,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { GameButton, RecentGame } from "@components";
 import { TextBoldItalic, TextItalic } from "@textComponents";
 import { ScreenView, FiltersView } from "./styles";
@@ -11,14 +16,28 @@ import { Games, Bets } from "@services/index";
 import { useState } from "react";
 import { gamesActions } from "@store/slices/games-slice";
 import CustomColors from "@constants/CustomColors";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 
-const Home: React.FC<{}> = (props) => {
+const Home: React.FC<DrawerScreenProps<{}>> = (props) => {
   const [games, setGames] = useState<IGame[] | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [filters, setFilters] = useState<string[]>([]);
   const [bets, setBets] = useState<IBet[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const token = useAppSelector((state) => state.user.token);
   const dispatch = useDispatch();
+  const { navigation } = props;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      setIsLoading(true);
+      getGames();
+      getBets();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   useEffect(() => {
     if (token.expires_at) {
       const timeout =
@@ -36,8 +55,14 @@ const Home: React.FC<{}> = (props) => {
     getBets();
   }, [filters]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getGames();
+    await getBets();
+    setRefreshing(false);
+  };
+
   const getGames = async () => {
-    setIsLoading(true);
     const { listGames } = Games();
     try {
       const res = await listGames();
@@ -102,7 +127,11 @@ const Home: React.FC<{}> = (props) => {
             })}
           </ScrollView>
         </FiltersView>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           {isLoading && (
             <ActivityIndicator
               style={{ flex: 1, marginTop: 50 }}

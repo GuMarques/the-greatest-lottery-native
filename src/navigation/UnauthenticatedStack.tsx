@@ -1,5 +1,7 @@
-import { commonStackScreenOptions } from "./commonOptions";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  StackNavigationOptions,
+} from "@react-navigation/stack";
 import { Login, ResetPassword, SendEmailResetPassword, SignUp } from "@screens";
 
 export type RootStackParamList = {
@@ -9,13 +11,19 @@ export type RootStackParamList = {
   ResetPassword: { token: string };
 };
 
+const commonStackScreenOptions: StackNavigationOptions = {
+  headerShown: false,
+  animationTypeForReplace: "pop",
+  headerTitleStyle: {
+    fontFamily: "helvetica-bold-italic",
+  },
+};
+
 const StackNavigator = createStackNavigator<RootStackParamList>();
 
 const UnauthenticatedStack: React.FC<{}> = (props) => {
   return (
-    <StackNavigator.Navigator
-      screenOptions={{ headerShown: false, ...commonStackScreenOptions }}
-    >
+    <StackNavigator.Navigator screenOptions={commonStackScreenOptions}>
       <StackNavigator.Screen name="Login" component={Login} />
       <StackNavigator.Screen name="SignUp" component={SignUp} />
       <StackNavigator.Screen
